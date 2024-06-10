@@ -1,5 +1,6 @@
 import { FIGHTER } from "../models/fighter.js";
 import { responseMiddleware } from "./response.middleware.js";
+import { fighterService } from "../services/fighterService.js";
 
 const isValueInRange = (value, min, max) => value >= min && value <= max;
 const isEmpty = (data) => (typeof data === "number" ? true : data?.length);
@@ -45,7 +46,7 @@ const updateFighterValid = (req, res, next) => {
     res.err = new Error(`Fighter wasn't found`);
     return responseMiddleware(req, res, next);
   }
-  
+
   const errors = [];
   const updatedFieldsNumber = Object.keys(FIGHTER).filter(
     (field) => field !== "id" && isEmpty(updatedData[field])

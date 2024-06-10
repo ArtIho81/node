@@ -21,7 +21,7 @@ class FighterService {
   }
 
   add(candidate) {
-    this.checkUnique(candidate.name.toLowerCase());
+    this.checkUniqueName(candidate.name.toLowerCase());
     candidate.health = candidate.health ?? this.defaultHealth;
     candidate.name = candidate.name.toLowerCase();
     const fighter = fighterRepository.create(candidate);
@@ -33,7 +33,7 @@ class FighterService {
   }
 
   update(id, update) {
-    update.name && this.checkUnique(update, id);
+    update.name && this.checkUniqueName(update.name, id);
     const updatedFighter = fighterRepository.update(id, update);
     if (!updatedFighter) {
       throw new Error(`Fighter wasn't found`);
