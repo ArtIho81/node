@@ -11,17 +11,7 @@ class UserService {
     return item;
   }
 
-  checkUnique(field, value, id) {
-    const isValueExist = this.search({ [field]: value });
-    const unique = id ? isValueExist?.id === id : !isValueExist;
-    if (!unique) {
-      throw new Error(`${value} already exist`);
-    }
-  }
-
   add(candidate) {
-    this.checkUnique("email", candidate.email.toLowerCase());
-    this.checkUnique("phoneNumber", candidate.phoneNumber);
     candidate.email = candidate.email.toLowerCase();
     const user = userRepository.create(candidate);
     return user;
@@ -32,9 +22,9 @@ class UserService {
   }
 
   update(id, update) {
-    update.email && this.checkUnique("email", update.email.toLowerCase(), id);
-    update.phoneNumber &&
-      this.checkUnique("phoneNumber", update.phoneNumber, id);
+    if (update.email) {
+      update.email = update.email.toLowerCase();
+    }
     const updatedUser = userRepository.update(id, update);
     return updatedUser;
   }

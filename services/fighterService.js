@@ -12,16 +12,7 @@ class FighterService {
     return item;
   }
 
-  checkUniqueName(name, id) {
-    const isNameExist = this.search({ name });
-    const unique = id ? isNameExist?.id === id : !isNameExist;
-    if (!unique) {
-      throw new Error(`Fighter ${name} already exist`);
-    }
-  }
-
   add(candidate) {
-    this.checkUniqueName(candidate.name.toLowerCase());
     candidate.health = candidate.health ?? this.defaultHealth;
     candidate.name = candidate.name.toLowerCase();
     const fighter = fighterRepository.create(candidate);
@@ -33,7 +24,9 @@ class FighterService {
   }
 
   update(id, update) {
-    update.name && this.checkUniqueName(update.name, id);
+    if (update.name) {
+      update.name = update.name.toLowerCase();
+    }
     const updatedFighter = fighterRepository.update(id, update);
     if (!updatedFighter) {
       throw new Error(`Fighter wasn't found`);
