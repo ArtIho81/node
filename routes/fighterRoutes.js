@@ -31,7 +31,7 @@ router.get(
       const { id } = req.params;
       const data = fighterService.search({id});
       if (!data) {
-        throw new Error(`Incorrect id`);
+        throw new Error(`Fighter wasn't found`);
       }
       res.data = data;
     } catch (err) {

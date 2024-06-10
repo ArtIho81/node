@@ -31,7 +31,7 @@ router.get(
       const { id } = req.params;
       const data = userService.search({id});
       if (!data) {
-        throw new Error(`Incorrect id`);
+        throw new Error(`User wasn't found`);
       }
       res.data = data;
     } catch (err) {
