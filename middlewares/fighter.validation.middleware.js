@@ -24,6 +24,10 @@ const createFighterValid = (req, res, next) => {
     }
   });
 
+  if (candidate.id) {
+    errors.push("Id in the request body is present");
+  }
+
   if (errors.length > 0) {
     res.err = errors;
     return responseMiddleware(req, res, next);
@@ -35,6 +39,13 @@ const createFighterValid = (req, res, next) => {
 const updateFighterValid = (req, res, next) => {
   // TODO: Implement validatior for FIGHTER entity during update
   const updatedData = req.body;
+  const { id } = req.params;
+  const fighter = fighterService.search({ id });
+  if (!fighter) {
+    res.err = new Error(`Fighter wasn't found`);
+    return responseMiddleware(req, res, next);
+  }
+  
   const errors = [];
   const updatedFieldsNumber = Object.keys(FIGHTER).filter(
     (field) => field !== "id" && isEmpty(updatedData[field])

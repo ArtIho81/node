@@ -1,4 +1,5 @@
 import { USER } from "../models/user.js";
+import { userService } from "../services/userService.js";
 import { responseMiddleware } from "./response.middleware.js";
 
 const validateEmail = (email) =>
@@ -23,6 +24,9 @@ const createUserValid = (req, res, next) => {
       errors.push(`${field} isn't valid`);
     }
   });
+  if (candidate.id) {
+    errors.push("Id is present in the request body");
+  }
 
   if (errors.length > 0) {
     res.err = errors;
@@ -35,14 +39,20 @@ const createUserValid = (req, res, next) => {
 const updateUserValid = (req, res, next) => {
   // TODO: Implement validatior for user entity during update
   const updatedData = req.body;
+  const { id } = req.params;
+  const user = userService.search({ id });
+  if (!user) {
+    res.err = new Error(`User wasn't found`);
+    return responseMiddleware(req, res, next);
+  }
   const errors = [];
-  const updatedFieldsNumber = Object.keys(USER).filter(
+  const updatedFields = Object.keys(USER).filter(
     (field) => field !== "id" && isEmpty(updatedData[field])
   );
-  if (updatedFieldsNumber.length === 0) {
+  if (updatedFields.length === 0) {
     errors.push("No data to update");
   } else {
-    updatedFieldsNumber.forEach((update) => {
+    updatedFields.forEach((update) => {
       if (
         (update === "phoneNumber" && !validatePhone(updatedData[update])) ||
         (update === "email" && !validateEmail(updatedData[update])) ||
@@ -52,6 +62,10 @@ const updateUserValid = (req, res, next) => {
       }
     });
   }
+  if (updatedData.id) {
+    errors.push("Id is present in the request body");
+  }
+
   if (errors.length > 0) {
     res.err = errors;
     return responseMiddleware(req, res, next);

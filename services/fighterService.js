@@ -12,17 +12,18 @@ class FighterService {
     return item;
   }
 
-  checkFighter(fighter) {
-    const { name } = fighter;
-    const isFighterExist = this.search({ name });
-    if (isFighterExist) {
+  checkUniqueName(name, id) {
+    const isNameExist = this.search({ name });
+    const unique = id ? isNameExist?.id === id : !isNameExist;
+    if (!unique) {
       throw new Error(`Fighter ${name} already exist`);
     }
   }
 
   add(candidate) {
-    this.checkFighter(candidate);
+    this.checkUnique(candidate.name.toLowerCase());
     candidate.health = candidate.health ?? this.defaultHealth;
+    candidate.name = candidate.name.toLowerCase();
     const fighter = fighterRepository.create(candidate);
     return fighter;
   }
@@ -32,7 +33,7 @@ class FighterService {
   }
 
   update(id, update) {
-    this.checkFighter(update);
+    update.name && this.checkUnique(update, id);
     const updatedFighter = fighterRepository.update(id, update);
     if (!updatedFighter) {
       throw new Error(`Fighter wasn't found`);

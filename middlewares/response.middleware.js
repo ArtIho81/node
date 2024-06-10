@@ -6,7 +6,8 @@ const responseMiddleware = (req, res, next) => {
     const message = Array.isArray(res.err)
       ? res.err.join(", ")
       : res.err.message;
-    return res.status(400).json(errorData(message));
+    const status = message.match(`wasn't found`) ? 404 : 400;
+    return res.status(status).json(errorData(message));
   }
   res.status(200).json(res.data);
   next();

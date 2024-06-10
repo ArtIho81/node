@@ -11,19 +11,18 @@ class UserService {
     return item;
   }
 
-  checkUser(user) {
-    const { email, phoneNumber } = user;
-    const isEmailExist = email && this.search({ email });
-    const isPnoneExist = phoneNumber && this.search({ phoneNumber });
-    if (isEmailExist || isPnoneExist) {
-      throw new Error(
-        `User email: ${user.email} or pnone: ${user.phoneNumber} already exist`
-      );
+  checkUnique(field, value, id) {
+    const isValueExist = this.search({ [field]: value });
+    const unique = id ? isValueExist?.id === id : !isValueExist;
+    if (!unique) {
+      throw new Error(`${value} already exist`);
     }
   }
 
   add(candidate) {
-    this.checkUser(candidate);
+    this.checkUnique("email", candidate.email.toLowerCase());
+    this.checkUnique("phoneNumber", candidate.phoneNumber);
+    candidate.email = candidate.email.toLowerCase();
     const user = userRepository.create(candidate);
     return user;
   }
@@ -33,11 +32,10 @@ class UserService {
   }
 
   update(id, update) {
-    this.checkUser(update);
+    update.email && this.checkUnique("email", update.email.toLowerCase(), id);
+    update.phoneNumber &&
+      this.checkUnique("phoneNumber", update.phoneNumber, id);
     const updatedUser = userRepository.update(id, update);
-    if (!updatedUser) {
-      throw new Error(`User wasn't found`);
-    }
     return updatedUser;
   }
 
