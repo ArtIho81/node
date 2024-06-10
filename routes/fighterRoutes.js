@@ -13,7 +13,7 @@ router.get(
   "/",
   (req, res, next) => {
     try {
-      const data = fighterService.getAllFighters();
+      const data = fighterService.getAll();
       res.data = data;
     } catch (err) {
       res.err = err;
@@ -29,7 +29,7 @@ router.get(
   (req, res, next) => {
     try {
       const { id } = req.params;
-      const data = fighterService.search(id);
+      const data = fighterService.search({id});
       if (!data) {
         throw new Error(`Incorrect id`);
       }
@@ -49,10 +49,7 @@ router.post(
   (req, res, next) => {
     try {
       const fighter = req.body;
-      const data = fighterService.add(user);
-      if (!data) {
-        throw new Error(`${fighter.name} already exist`);
-      }
+      const data = fighterService.add(fighter);
       res.data = data;
     } catch (err) {
       res.err = err;
@@ -71,9 +68,6 @@ router.patch(
       const { id } = req.params;
       const update = req.body;
       const data = fighterService.update(id, update);
-      if (!data) {
-        throw new Error(`Incorrect id`);
-      }
       res.data = data;
     } catch (err) {
       res.err = err;
@@ -90,9 +84,6 @@ router.delete(
     try {
       const { id } = req.params;
       const data = fighterService.delete(id);
-      if (!data) {
-        throw new Error(`Incorrect id`);
-      }
       res.data = data;
     } catch (err) {
       res.err = err;
